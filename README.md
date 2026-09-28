@@ -18,8 +18,10 @@ These scripts remove those mails from the queue so the loop stops.
 | --- | --- |
 | `purge_postfix_mailer_daemon.sh` | Bounces (null sender / `MAILER-DAEMON`), mails to `postmaster@<myorigin>`, and mails in `incoming`/`active` that mention `postmaster@<myorigin>` or `MAILER-DAEMON@<myorigin>` |
 | `purge_postfix_mails.sh` | Everything above, plus deferred mails whose delay reason shows the relayhost refused them (e.g. `421 Too many connections`, `454 4.7.0 Error: too many new TLS sessions`) |
+| `purge_postfix_per_recipient.sh ADDR...` | Mails that have at least one of the given addresses as a recipient (compared case-insensitively). The whole mail is deleted, including for its other recipients. |
 
-The domain is taken from Postfix's `myorigin` setting (`postconf -xh myorigin`),
+The first two scripts take the domain from Postfix's `myorigin` setting
+(`postconf -xh myorigin`),
 so the same scripts work on every machine without editing.
 
 To match more relayhost errors, add patterns to `DEFER_REASONS` in
@@ -38,6 +40,8 @@ as `\.`.
 sudo systemctl stop postfix      # optional, but purging is much faster
 sudo ./purge_postfix_mails.sh
 sudo systemctl start postfix
+
+sudo ./purge_postfix_per_recipient.sh root@example.org admin@example.org
 ```
 
 The scripts also work while Postfix is running. Postfix may then move some
