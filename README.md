@@ -53,6 +53,29 @@ skips them.
 **The deleted mails are gone for good.** Check `postqueue -p` first if the
 queue might contain mail you want to keep.
 
+## Bash completion
+
+The scripts take no options, and the mail addresses are not completed, as
+reading them from the queue would be slow during a mail loop.
+`completions/purge_postfix_mails.sh` keeps bash from offering file names
+instead. The packages install it, with links named after the other scripts;
+otherwise copy it to bash-completion's directory:
+
+```sh
+install -D -m 0644 completions/purge_postfix_mails.sh /usr/share/bash-completion/completions/purge_postfix_mails.sh
+for NAME in purge_postfix_mailer_daemon.sh purge_postfix_per_recipient.sh purge_postfix_per_sender.sh; do
+    ln -s purge_postfix_mails.sh /usr/share/bash-completion/completions/$NAME
+done
+```
+
+## Tests
+
+```sh
+python3 -m unittest discover -s tests -v
+```
+
+tests the bash completion.
+
 ## Preventing the loop
 
 Purging only fixes the symptom. To stop the loop from starting:
